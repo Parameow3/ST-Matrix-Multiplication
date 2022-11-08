@@ -1,7 +1,6 @@
-package controller;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Matrix {
@@ -28,12 +27,29 @@ public class Matrix {
         return matrix;
     }
 
+    public void generateMatrix(int n, int m) {
+        Random random = new Random();
+        // redim arraylist size
+        ArrayList[][] matrix = new ArrayList[n][m];
 
+        // user input matrix
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < m; j++){
+                matrix[i][j] = new ArrayList<>();
+                matrix[i][j].add(random.nextInt(50));
+            }
+        }
+        display(matrix, n, m);
+    }
+
+    /**
+     *
+     */
     public void multiply(){
         // create matrix 1
-        System.out.print("Please Input n1: ");
+        System.out.print("Please input matrix1's number of row: ");
         int n1 = scanner.nextInt();
-        System.out.print("Please Input m1: ");
+        System.out.print("Please input matrix1's number of column: ");
         int m1 = scanner.nextInt();
         // initialize matrix1
         ArrayList[][] matrix1 = new ArrayList[n1][m1];
@@ -44,14 +60,14 @@ public class Matrix {
         int n2 = 0;
         // check the m1 and n2 to make sure that matrix can multiply
         while (!isMultiple) {
-            System.out.print("Please Input n2: ");
+            System.out.print("Please input matrix2's number of row: ");
             n2 = scanner.nextInt();
             if (n2 == m1)
                 isMultiple = true;
             else
-                System.out.println("Your n2 is not equal to m1!");
+                System.out.println("Your [matrix2's number of row] is not equal to [matrix1's number of column]!");
         }
-        System.out.print("Please Input m2: ");
+        System.out.print("Please input matrix2's number of column: ");
         int m2 = scanner.nextInt();
         // initialize matrix2
         ArrayList[][] matrix2 = new ArrayList[n2][m2];
