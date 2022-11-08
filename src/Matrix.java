@@ -36,7 +36,7 @@ public class Matrix {
         for (int i = 0; i < n; i++){
             for (int j = 0; j < m; j++){
                 matrix[i][j] = new ArrayList<>();
-                matrix[i][j].add(random.nextInt(50));
+                matrix[i][j].add(random.nextInt(10));
             }
         }
         display(matrix, n, m);
