@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Matrix {
     private Scanner scanner = new Scanner(System.in);
@@ -27,7 +25,7 @@ public class Matrix {
         return matrix;
     }
 
-    public void generateMatrix(int n, int m) {
+    public ArrayList[][] generateMatrix(int n, int m) {
         Random random = new Random();
         // redim arraylist size
         ArrayList[][] matrix = new ArrayList[n][m];
@@ -36,10 +34,10 @@ public class Matrix {
         for (int i = 0; i < n; i++){
             for (int j = 0; j < m; j++){
                 matrix[i][j] = new ArrayList<>();
-                matrix[i][j].add(random.nextInt(10));
+                matrix[i][j].add(random.nextInt(2));
             }
         }
-        display(matrix, n, m);
+        return matrix;
     }
 
     /**
@@ -53,7 +51,7 @@ public class Matrix {
         int m1 = scanner.nextInt();
         // initialize matrix1
         ArrayList[][] matrix1 = new ArrayList[n1][m1];
-        matrix1 = createMatrix(n1, m1);
+        matrix1 = generateMatrix(n1, m1);
 
         // create matrix 2
         boolean isMultiple = false;
@@ -71,11 +69,13 @@ public class Matrix {
         int m2 = scanner.nextInt();
         // initialize matrix2
         ArrayList[][] matrix2 = new ArrayList[n2][m2];
-        matrix2 = createMatrix(n2, m2);
+        matrix2 = generateMatrix(n2, m2);
 
         //initial new matrix
         ArrayList[][] mulMatrix = new ArrayList[n1][m2];
 
+        // start timer
+        Date start = new Date();
         // multiplication start
         int tempSum = 0;
         for(int i = 0; i < n1; i++) {
@@ -88,10 +88,93 @@ public class Matrix {
                 tempSum = 0;
             }
         }
+        Date end = new Date();
+        long timeTaken = end.getTime() - start.getTime();
+
         System.out.println("Here is the multiplication result:");
         display(mulMatrix, n1, m2);
+
+        System.out.println();
+        System.out.println("EXECUTION TIME--------------");
+        System.out.println(timeTaken + " ms");
+        System.out.printf("%02d min, %02d sec, %03d ms%n",
+                TimeUnit.MILLISECONDS.toMinutes(timeTaken),
+                TimeUnit.MILLISECONDS.toSeconds(timeTaken) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeTaken)),
+                timeTaken % 1000);
+
+        System.out.println("----------------------------");
     }
 
+    public void multiMultiply(){
+        // create matrix 1
+        System.out.print("Please input matrix1's number of row: ");
+        int n1 = scanner.nextInt();
+        System.out.print("Please input matrix1's number of column: ");
+        int m1 = scanner.nextInt();
+        // initialize matrix1
+        ArrayList[][] matrix1 = new ArrayList[n1][m1];
+        matrix1 = generateMatrix(n1, m1);
+
+        // create matrix 2
+        boolean isMultiple = false;
+        int n2 = 0;
+        // check the m1 and n2 to make sure that matrix can multiply
+        while (!isMultiple) {
+            System.out.print("Please input matrix2's number of row: ");
+            n2 = scanner.nextInt();
+            if (n2 == m1)
+                isMultiple = true;
+            else
+                System.out.println("Your [matrix2's number of row] is not equal to [matrix1's number of column]!");
+        }
+        System.out.print("Please input matrix2's number of column: ");
+        int m2 = scanner.nextInt();
+        // initialize matrix2
+        ArrayList[][] matrix2 = new ArrayList[n2][m2];
+        matrix2 = generateMatrix(n2, m2);
+
+        //initial new matrix
+        ArrayList[][] mulMatrix = new ArrayList[n1][m2];
+
+        Date start = new Date();
+        // Create 10 threads
+        ArrayList<Thread> threads = new ArrayList<>();
+        for (int i = 0; i < 16; i++) {
+            threads.add(new Thread(new MultiThread(mulMatrix, matrix1, matrix2, i)));
+        }
+
+        // Start all threads
+        for (Thread thread : threads) {
+            thread.start();
+        }
+
+        // Wait for all threads to complete
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Date end = new Date();
+        long timeTaken = end.getTime() - start.getTime();
+
+        System.out.println("Here is the multiplication result:");
+        display(mulMatrix, n1, m2);
+
+        System.out.println();
+        System.out.println("EXECUTION TIME--------------");
+        System.out.println(timeTaken + " ms");
+        System.out.printf("%02d min, %02d sec, %03d ms%n",
+                TimeUnit.MILLISECONDS.toMinutes(timeTaken),
+                TimeUnit.MILLISECONDS.toSeconds(timeTaken) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeTaken)),
+                timeTaken % 1000);
+
+        System.out.println("----------------------------");
+    }
     /**
      *
      * @param matrix
